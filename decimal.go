@@ -632,6 +632,25 @@ func (d Decimal) Mod(d2 Decimal) Decimal {
 	return d.Sub(d2.Mul(quo))
 }
 
+// Sqrt square root
+func (d Decimal) Sqrt(precision int32) Decimal {
+	x0 := NewFromInt(0)
+	d2 := NewFromInt(2)
+
+	f, _ := d.Float64()
+	x1 := NewFromFloat(math.Sqrt(f))
+
+	for {
+		if x0.Equal(x1) {
+			break
+		}
+		x0 = x1
+		x1 = d.DivRound(x0, scale).Add(x0).DivRound(d2, scale)
+	}
+
+	return x1
+}
+
 // Pow returns d to the power d2
 func (d Decimal) Pow(d2 Decimal) Decimal {
 	var temp Decimal
