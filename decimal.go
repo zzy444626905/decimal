@@ -931,6 +931,30 @@ func (d Decimal) IsNegative() bool {
 	return d.Sign() == -1
 }
 
+// Sqrt square root
+func (d Decimal) Sqrt() Decimal {
+	return d.SqrtRound(int32(DivisionPrecision))
+}
+
+// SqrtRound square root with precision
+func (d Decimal) SqrtRound(precision int32) Decimal {
+	x0 := NewFromInt(0)
+	d2 := NewFromInt(2)
+
+	f, _ := d.Float64()
+	x1 := NewFromFloat(math.Sqrt(f))
+
+	for {
+		if x0.Equal(x1) {
+			break
+		}
+		x0 = x1
+		x1 = d.DivRound(x0, precision).Add(x0).DivRound(d2, precision)
+	}
+
+	return x1
+}
+
 // IsZero return
 //
 //	true if d == 0
